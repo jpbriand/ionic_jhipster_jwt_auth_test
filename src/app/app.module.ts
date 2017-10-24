@@ -7,6 +7,11 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 
+import { AuthProvider } from '../provider/auth.provider';
+import { HttpProvider } from '../provider/http-interceptor.provider';
+
+import { Http, HttpModule, XHRBackend, RequestOptions, RequestOptionsArgs, Response, ConnectionBackend, Headers } from '@angular/http';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -14,7 +19,8 @@ import { HomePage } from '../pages/home/home';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    HttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -24,7 +30,14 @@ import { HomePage } from '../pages/home/home';
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    {
+      provide: Http,
+      useFactory: (backend: XHRBackend, defaultOptions: RequestOptions) =>
+      { return new HttpProvider(backend, defaultOptions); },
+      deps: [XHRBackend, RequestOptions]
+    },
+    AuthProvider
   ]
 })
-export class AppModule {}
+export class AppModule { }
